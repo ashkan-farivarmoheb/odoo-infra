@@ -2,11 +2,27 @@
 name: Delete VPC
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Enable manual triggering
     inputs:
       target-env:
         required: true
         type: string
+
+  workflow_call:
+    inputs:
+      target-env:
+        required: true
+        type: string
+
+    secrets:
+      AWS_REGION:
+        required: true
+      AWS_ACCOUNT_ID:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 
 jobs:
     delete_cluster:

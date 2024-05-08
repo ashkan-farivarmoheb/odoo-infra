@@ -1,4 +1,4 @@
-name: Create a VPC
+name: Create VPC
 
 on:
   workflow_dispatch: # Enable manual triggering
