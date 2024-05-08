@@ -1,0 +1,65 @@
+name: Create a VPC
+
+on:
+  workflow_dispatch: # Enable manual triggering
+    inputs:
+      target-env:
+        required: true
+        type: string
+
+  workflow_call:
+    inputs:
+      target-env:
+        required: true
+        type: string
+
+    secrets:
+      AWS_REGION:
+        required: true
+      AWS_ACCOUNT_ID:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  deploy:
+    name: Create a VPC for ${{ inputs.target-env }}
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.target-env }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.0  # Specify the Terraform version to use
+
+      - name: Initialize Terraform
+        run: terraform init -backend-config=hcl/backend_${{ inputs.target-env }}.hcl
+        working-directory: vpc
+        
+      - name: Validate Terraform configuration
+        run: terraform validate
+        working-directory: vpc
+        
+      - name: Plan Terraform changes
+        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars
+        working-directory: vpc
+        
+      - name: Apply Terraform changes
+        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars
+        working-directory: vpc
