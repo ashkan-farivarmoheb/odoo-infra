@@ -6,26 +6,12 @@ locals {
   availability_zones = ["${var.aws_region}a", "${var.aws_region}b", "${var.aws_region}c"]
 }
 
-data "aws_vpc" "existing_vpc" {
-  cidr_block = var.vpc_cidr
-}
-
-data "aws_subnet" "public_subnet" {
-  vpc_id    = data.aws_vpc.existing_vpc.id
-  cidr_block = var.public_subnets_cidr
-}
-
-data "aws_subnet" "private_subnet" {
-  vpc_id    = data.aws_vpc.existing_vpc.id
-  cidr_block = var.private_subnets_cidr
-}
-
 locals {
-  existing_public_subnet_cidr  = data.aws_subnet.public_subnet.cidr_block
-  existing_private_subnet_cidr = data.aws_subnet.private_subnet.cidr_block
+  existing_public_subnet_cidrs  = [for subnet in data.aws_subnet.public_subnet : subnet.cidr_block]
+  existing_private_subnet_cidrs = [for subnet in data.aws_subnet.private_subnet : subnet.cidr_block]
 
-  public_subnet_cidr_valid  = var.public_subnets_cidr == local.existing_public_subnet_cidr
-  private_subnet_cidr_valid = var.private_subnets_cidr == local.existing_private_subnet_cidr
+  public_subnet_cidr_valid  = length(var.public_subnets_cidr) == length(local.existing_public_subnet_cidrs) ? true : false
+  private_subnet_cidr_valid = length(var.private_subnets_cidr) == length(local.existing_private_subnet_cidrs) ? true : false
 }
 
 # Print error if CIDR blocks don't match
