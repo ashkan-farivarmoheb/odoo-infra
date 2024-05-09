@@ -82,14 +82,6 @@ jobs:
             exit 1
           fi
 
-          # Convert JSON strings to arrays
-          echo "public_subnets_cidr_arr=($(echo '${{ inputs.public-subnet-cidr }}' |  jq -r '.[]'))" >> "$GITHUB_OUTPUT"
-          echo "private_subnets_cidr_arr=($(echo '${{ inputs.private-subnet-cidr }}' |  jq -r '.[]'))" >> "$GITHUB_OUTPUT"
-
-          # Convert public and private subnets CIDR lists to Terraform list format
-          # echo "public_subnets_cidr=$(echo "${public_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')" >> "$GITHUB_OUTPUT"
-          # echo "private_subnets_cidr=$(echo "${private_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')" >> "$GITHUB_OUTPUT"
-
         shell: bash
 
       - name: Set up Terraform
@@ -102,10 +94,16 @@ jobs:
         working-directory: vpc
         
       - name: Validate Terraform configuration
-        run: terraform validate -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars \
+        run: |
+          public_subnets_cidr_arr=($(echo '${{ inputs.public-subnet-cidr }}' |  jq -r '.[]'))
+          public_subnets_cidr=$(echo "${public_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')
+          private_subnets_cidr_arr=($(echo '${{ inputs.private-subnet-cidr }}' |  jq -r '.[]'))
+          private_subnets_cidr=$(echo "${private_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')
+
+          terraform validate -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars \
           -var="vpc_cidr=${{ inputs.vpc-cidr }}" \
-          -var="public_subnets_cidr=[\"${{ steps.validate_inputs.outputs.public_subnets_cidr }}\"]" \
-          -var="private_subnets_cidr=[\"${{ steps.validate_inputs.outputs.private_subnets_cidr }}\"]"
+          -var="public_subnets_cidr=[\"$public_subnets_cidr\"]" \
+          -var="private_subnets_cidr=[\"$private_subnets_cidr\"]"
         working-directory: vpc
         
       - name: Plan Terraform changes
