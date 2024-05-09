@@ -84,16 +84,6 @@ jobs:
             exit 1
           fi
 
-          if ! echo "$public_subnet_cidr" | grep -E '^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$' &> /dev/null; then
-            echo "::error::Invalid public subnet CIDR format. Please provide a valid CIDR block (e.g., 10.0.1.0/24)"
-            exit 1
-          fi
-
-          if ! echo "$private_subnet_cidr" | grep -E '^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$' &> /dev/null; then
-            echo "::error::Invalid private subnet CIDR format. Please provide a valid CIDR block (e.g., 10.0.2.0/24)"
-            exit 1
-          fi
-
           # Convert JSON strings to arrays
           echo "public_subnets_cidr_arr=($(echo $public_subnets_cidr | jq -r '.[]'))" >> "$GITHUB_OUTPUT"
           echo "private_subnets_cid_arr=($(echo $private_subnets_cidr | jq -r '.[]'))" >> "$GITHUB_OUTPUT"
