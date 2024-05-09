@@ -100,7 +100,10 @@ jobs:
         working-directory: vpc
         
       - name: Validate Terraform configuration
-        run: terraform validate
+        run: terraform validate -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars \
+          -var="vpc_cidr=${{ inputs.vpc-cidr }}" \
+          -var="public_subnets_cidr=${{ steps.validate_inputs.outputs.public_subnets_cidr_arr }}" \
+          -var="private_subnets_cidr=${{ steps.validate_inputs.outputs.private_subnets_cidr_arr }}"
         working-directory: vpc
         
       - name: Plan Terraform changes
