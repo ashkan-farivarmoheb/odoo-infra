@@ -87,8 +87,8 @@ jobs:
           echo "private_subnets_cidr_arr=($(echo '${{ inputs.private-subnet-cidr }}' |  jq -r '.[]'))" >> "$GITHUB_OUTPUT"
 
           # Convert public and private subnets CIDR lists to Terraform list format
-          echo "public_subnets_cidr=$(echo "${public_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')" >> "$GITHUB_OUTPUT"
-          echo "private_subnets_cidr=$(echo "${private_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')" >> "$GITHUB_OUTPUT"
+          # echo "public_subnets_cidr=$(echo "${public_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')" >> "$GITHUB_OUTPUT"
+          # echo "private_subnets_cidr=$(echo "${private_subnets_cidr_arr[@]}" | tr -d '\n' | sed 's/ /", "/g')" >> "$GITHUB_OUTPUT"
 
         shell: bash
 
