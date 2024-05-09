@@ -6,6 +6,20 @@ locals {
   availability_zones = ["${var.aws_region}a", "${var.aws_region}b", "${var.aws_region}c"]
 }
 
+data "aws_vpc" "existing_vpc" {
+  cidr_block = var.vpc_cidr
+}
+
+data "aws_subnet" "public_subnet" {
+  vpc_id    = data.aws_vpc.existing_vpc.id
+  cidr_block = var.public_subnets_cidr
+}
+
+data "aws_subnet" "private_subnet" {
+  vpc_id    = data.aws_vpc.existing_vpc.id
+  cidr_block = var.private_subnets_cidr
+}
+
 locals {
   existing_public_subnet_cidrs  = [for subnet in data.aws_subnet.public_subnet : subnet.cidr_block]
   existing_private_subnet_cidrs = [for subnet in data.aws_subnet.private_subnet : subnet.cidr_block]
