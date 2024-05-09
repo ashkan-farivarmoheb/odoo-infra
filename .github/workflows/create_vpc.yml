@@ -13,11 +13,11 @@ on:
       public-subnet-cidr:
         description: 'CIDR block for the public subnet'
         required: true
-        default: '10.0.1.0/24'
+        default: '["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]'
       private-subnet-cidr:
         description: 'CIDR block for the private subnet'
         required: true
-        default: '10.0.2.0/24'
+        default: '["10.0.10.0/24", "10.0.11.0/24", "10.0.12.0/24"]'
 
   workflow_call:
     inputs:
@@ -29,12 +29,12 @@ on:
         type: string
         required: true
         default: '10.0.0.0/16'
-      public-subnet-cidr:
+      public-subnets-cidr:
         description: 'CIDR block for the public subnet'
         type: string
         required: true
         default: '10.0.1.0/24'
-      private-subnet-cidr:
+      private-subnets-cidr:
         description: 'CIDR block for the private subnet'
         type: string
         required: true
@@ -75,8 +75,8 @@ jobs:
         run: |
           # Get input values
           vpc_cidr="${{ inputs.vpc-cidr }}"
-          public_subnet_cidr="${{ inputs.public-subnet-cidr }}"
-          private_subnet_cidr="${{ inputs.private-subnet-cidr }}"
+          public_subnet_cidr="${{ inputs.public-subnets-cidr }}"
+          private_subnet_cidr="${{ inputs.private-subnets-cidr }}"
 
           # Validate CIDR formats
           if ! echo "$vpc_cidr" | grep -E '^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$' &> /dev/null; then
@@ -94,16 +94,9 @@ jobs:
             exit 1
           fi
 
-          # Validate CIDR relationships
-          if ! aws ec2 check-subnet-cidr-block --cidr-block "$public_subnet_cidr" --vpc-id "$(aws ec2 describe-vpcs --filters Name=cidr-block,Values="$vpc_cidr" --query 'Vpcs[0].VpcId' --output text)" --region "${{ secrets.AWS_REGION }}"; then
-            echo "::error::Public subnet CIDR block is not valid for the specified VPC CIDR block."
-            exit 1
-          fi
-
-          if ! aws ec2 check-subnet-cidr-block --cidr-block "$private_subnet_cidr" --vpc-id "$(aws ec2 describe-vpcs --filters Name=cidr-block,Values="$vpc_cidr" --query 'Vpcs[0].VpcId' --output text)" --region "${{ secrets.AWS_REGION }}"; then
-            echo "::error::Private subnet CIDR block is not valid for the specified VPC CIDR block."
-            exit 1
-          fi
+          # Convert JSON strings to arrays
+          echo "public_subnets_cidr_arr=($(echo $public_subnets_cidr | jq -r '.[]'))" >> "$GITHUB_OUTPUT"
+          echo "private_subnets_cid_arr=($(echo $private_subnets_cidr | jq -r '.[]'))" >> "$GITHUB_OUTPUT"
 
         shell: bash
 
@@ -121,9 +114,15 @@ jobs:
         working-directory: vpc
         
       - name: Plan Terraform changes
-        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars
+        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars \
+          -var="vpc_cidr=${{ inputs.vpc-cidr }}" \
+          -var="public_subnets_cidr=${{ steps.validate_inputs.outputs.public_subnets_cidr_arr }}" \
+          -var="private_subnets_cidr=${{ steps.validate_inputs.outputs.private_subnets_cidr_arr }}"
         working-directory: vpc
         
       - name: Apply Terraform changes
-        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars
+        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars \
+          -var="vpc_cidr=${{ inputs.vpc-cidr }}" \
+          -var="public_subnets_cidr=${{ steps.validate_inputs.outputs.public_subnets_cidr_arr }}" \
+          -var="private_subnets_cidr=${{ steps.validate_inputs.outputs.private_subnets_cidr_arr }}"
         working-directory: vpc
