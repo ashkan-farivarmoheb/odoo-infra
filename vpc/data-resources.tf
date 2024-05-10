@@ -12,12 +12,12 @@ data "aws_vpc" "existing_vpc" {
 
 data "aws_subnet" "public_subnet" {
   vpc_id    = data.aws_vpc.existing_vpc.id
-  cidr_block = var.public_subnets_cidr
+  cidr_block = [var.public_subnets_cidr]
 }
 
 data "aws_subnet" "private_subnet" {
   vpc_id    = data.aws_vpc.existing_vpc.id
-  cidr_block = var.private_subnets_cidr
+  cidr_block = [var.private_subnets_cidr]
 }
 
 locals {
