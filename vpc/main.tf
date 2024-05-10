@@ -8,7 +8,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = true
 
   tags = {
-    Name        = "${var.environment}-vpc"
+    Name        = "${var.environment}-${var.project}-vpc"
     Environment = "${var.environment}"
   }
 }
@@ -21,7 +21,7 @@ resource "aws_internet_gateway" "ig" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags = {
-    Name        = "${var.environment}-igw"
+    Name        = "${var.environment}-${var.project}-igw"
     Environment = "${var.environment}"
   }
 }
@@ -39,7 +39,7 @@ resource "aws_nat_gateway" "nat" {
   depends_on    = [aws_internet_gateway.ig]
 
   tags = {
-    Name        = "nat"
+    Name        = "${var.environment}-${var.project}-nat"
     Environment = "${var.environment}"
   }
 }
@@ -77,7 +77,7 @@ resource "aws_route_table" "private" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags = {
-    Name        = "${var.environment}-private-route-table"
+    Name        = "${var.environment}-${var.project}-private-route-table"
     Environment = "${var.environment}"
   }
 }
@@ -87,7 +87,7 @@ resource "aws_route_table" "public" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags = {
-    Name        = "${var.environment}-public-route-table"
+    Name        = "${var.environment}-${var.project}-public-route-table"
     Environment = "${var.environment}"
   }
 }

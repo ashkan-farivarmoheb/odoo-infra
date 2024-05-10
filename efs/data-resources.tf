@@ -1,7 +1,7 @@
 data "aws_vpcs" "odoo" {
   filter {
-    name   = "cidr"
-    values = ["10.1.0.0/16"]
+    name   = "tag:Name"
+    values = ["${var.environment}-${var.project}-vpc"]
   }
 }
 
