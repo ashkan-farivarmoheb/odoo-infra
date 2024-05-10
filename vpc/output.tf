@@ -22,6 +22,6 @@ output "public_route_table" {
   value = "${aws_route_table.public.id}"
 }
 
-output "validation_error_message" {
-  value = data.null_data_source.validation_error.*.triggers.error_message
-}
+# output "validation_error_message" {
+#   value = data.null_data_source.validation_error.*.triggers.error_message
+# }
