@@ -174,6 +174,14 @@ resource "aws_security_group" "default" {
         protocol    = "TCP",
         cidr_blocks = [var.vpc_cidr],
         description = "Allow NFS traffic within the VPC"
+      },
+      {
+        name        = "ALL",
+        from_port   = 0,
+        to_port     = 0,
+        protocol    = "-1",
+        cidr_blocks = ["0.0.0.0/0"],
+        description = "Allow All traffic within the VPC"
       }
     ]
 
@@ -194,15 +202,6 @@ resource "aws_security_group" "default" {
 resource "aws_security_group_rule" "ingress_all_traffic" {
   security_group_id = aws_security_group.default.id
   type              = "ingress"
-  protocol          = "-1"  # ALL protocols
-  from_port         = 0     # ALL ports
-  to_port           = 0     # ALL ports
-  source_security_group_id = aws_security_group.default.id
-}
-
-resource "aws_security_group_rule" "eggress_all_traffic" {
-  security_group_id = aws_security_group.default.id
-  type              = "egress"
   protocol          = "-1"  # ALL protocols
   from_port         = 0     # ALL ports
   to_port           = 0     # ALL ports
