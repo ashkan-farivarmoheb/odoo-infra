@@ -146,6 +146,14 @@ resource "aws_security_group" "default" {
         description = "Allow NFS traffic within the VPC"
       },
       {
+        name        = "NFS",
+        from_port   = 5432,
+        to_port     = 5432,
+        protocol    = "TCP",
+        cidr_blocks = [var.vpc_cidr],
+        description = "Allow NFS traffic within the VPC"
+      },
+      {
         name        = "HTTPS",
         from_port   = 443,
         to_port     = 443,
