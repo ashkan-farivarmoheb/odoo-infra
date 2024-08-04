@@ -25,7 +25,7 @@ resource "aws_iam_role" "rds_proxy_role" {
             "secretsmanager:GetSecretValue",
             "secretsmanager:DescribeSecret"
           ]
-          Resource = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:your-secret-name"
+          Resource = aws_secretsmanager_secret.rds_username_and_password.arn
         }
       ]
     })
