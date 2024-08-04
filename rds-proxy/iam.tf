@@ -13,6 +13,23 @@ resource "aws_iam_role" "rds_proxy_role" {
       }
     ]
   })
+
+  inline_policy {
+    name   = "SecretsManagerAccessPolicy"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Effect = "Allow"
+          Action = [
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret"
+          ]
+          Resource = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:your-secret-name"
+        }
+      ]
+    })
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "rds_proxy_policy" {
