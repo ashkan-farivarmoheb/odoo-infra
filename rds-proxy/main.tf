@@ -40,7 +40,6 @@ resource "aws_rds_cluster" "postgresql" {
   db_subnet_group_name    = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids  = [local.security_group_id]
   skip_final_snapshot     = true
-  apply_immediately       = true
   iops                    = 3000
   storage_type = "${var.storage_type}"
   
