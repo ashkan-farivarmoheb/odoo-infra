@@ -1,0 +1,10 @@
+aws_region = "ap-southeast-2"
+aws_account_id = "838811465072"
+environment = "develop"
+project = "odoo"
+engine_version = "16.3"
+instance_class = "db.m5d.large"
+storage_type = "gp3"
+password = "odooserver"
+username = "odoouser"
+require_tls = true
