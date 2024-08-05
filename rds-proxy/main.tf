@@ -30,34 +30,24 @@ resource "aws_db_subnet_group" "subnet_group" {
   subnet_ids = local.private_odoo_ids # Specify your subnet IDs
 }
 
-resource "aws_rds_cluster" "postgresql" {
-  cluster_identifier      = local.name
+resource "aws_db_instance" "postgresql" {
+  identifier              = local.name
   engine                  = "postgres"
   engine_version          = "${var.engine_version}"
-  database_name           = "${var.project}"
-  master_username         = local.username_password.username
-  master_password         = local.username_password.password
+  instance_class          = "${var.instance_class}"
+  username                = local.username_password.username
+  password                = local.username_password.password
   db_subnet_group_name    = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids  = [local.security_group_id]
-  skip_final_snapshot     = true
-  iops                    = "${var.iops}"
-  storage_type = "${var.storage_type}"
-  
-  # Multi-AZ 
-  availability_zones       = local.availability_zones
-
-  # Instance configuration
-  db_cluster_instance_class = "${var.instance_class}"
-
-  # Database port
-  port = 5432
-
-  # Database authentication
-  iam_database_authentication_enabled = false
-
-  network_type = "IPV4"
-
   allocated_storage       = "${var.allocated_storage}"
+  iops                    = "${var.iops}"
+  storage_type            = "${var.storage_type}"
+  storage_throughput      = "${var.storage_throughput}"
+  port                    = 5432
   apply_immediately       = true
+  multi_az                = true
   deletion_protection     = false
+  skip_final_snapshot     = true
+  iam_database_authentication_enabled = false
+  network_type = "IPV4"
 }

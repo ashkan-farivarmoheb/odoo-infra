@@ -10,3 +10,4 @@ username = "odoouser"
 require_tls = true
 allocated_storage = 100
 iops = 3000
+storage_throughput = 125
