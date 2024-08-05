@@ -40,7 +40,7 @@ resource "aws_rds_cluster" "postgresql" {
   db_subnet_group_name    = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids  = [local.security_group_id]
   skip_final_snapshot     = true
-  iops                    = 3000
+  iops                    = "${var.iops}"
   storage_type = "${var.storage_type}"
   
   # Multi-AZ 
@@ -57,8 +57,7 @@ resource "aws_rds_cluster" "postgresql" {
 
   network_type = "IPV4"
 
-  allocated_storage       = 400  # Set to at least 400 GB to meet IOPS requirements
-  apply_immediately = true
+  allocated_storage       = "${var.allocated_storage}"
+  apply_immediately       = true
   deletion_protection     = false
-
 }

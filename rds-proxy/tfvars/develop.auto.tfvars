@@ -8,3 +8,5 @@ storage_type = "gp3"
 password = "odooserver"
 username = "odoouser"
 require_tls = true
+allocated_storage = 100
+iops = 3000
