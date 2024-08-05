@@ -44,6 +44,11 @@ variable "allocated_storage" {
   default     = 100
 }
 
+variable "storage_throughput" {
+  type        = number
+  default     = 125
+}
+
 variable "username" {
   type = string
   description = "username"
