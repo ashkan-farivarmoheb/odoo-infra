@@ -57,7 +57,7 @@ resource "aws_rds_cluster" "postgresql" {
 
   network_type = "IPV4"
 
-  allocated_storage = 20
+  allocated_storage       = 400  # Set to at least 400 GB to meet IOPS requirements
   apply_immediately = true
   deletion_protection     = false
 
