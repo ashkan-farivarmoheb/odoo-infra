@@ -34,7 +34,7 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
         Action = [
           "rds-db:connect"
         ]
-        Resource = "arn:aws:rds-db:${var.aws_region}:${var.aws_account_id}:dbuser:${aws_rds_cluster.postgresql.resource_id}/${local.username_password.username}"
+        Resource = "arn:aws:rds-db:${var.aws_region}:${var.aws_account_id}:dbuser:${aws_rds_cluster.postgresql.cluster_identifier}/${local.username_password.username}"
       }
     ]
   })
