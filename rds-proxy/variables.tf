@@ -34,6 +34,16 @@ variable "storage_type" {
   description = "storage type"
 }
 
+variable "iops" {
+  type        = number
+  default     = 3000
+}
+
+variable "allocated_storage" {
+  type        = number
+  default     = 100
+}
+
 variable "username" {
   type = string
   description = "username"

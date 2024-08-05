@@ -34,8 +34,13 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
         Action = [
           "rds-db:connect"
         ]
-        Resource = "arn:aws:rds-db:${var.aws_region}:${var.aws_account_id}:dbuser:${aws_rds_cluster.postgresql.cluster_identifier}/${local.username_password.username}"
+        Resource = "arn:aws:rds-db:${var.aws_region}:${var.aws_account_id}:dbuser:${aws_rds_cluster.postgresql.resource_id}/${local.username_password.username}"
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "rds_proxy_policy_attachment" {
+  role       = aws_iam_role.rds_proxy_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
 }
