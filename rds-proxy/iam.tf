@@ -1,5 +1,5 @@
 resource "aws_iam_role" "rds_proxy_role" {
-  name = "rds-proxy-role"
+  name = "${local.name}-rds-proxy-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,6 +16,7 @@ resource "aws_iam_role" "rds_proxy_role" {
 }
 
 resource "aws_iam_role_policy" "rds_proxy_policy" {
+  name = "${local.name}-rds-proxy-policy"
   role = aws_iam_role.rds_proxy_role.name
 
   policy = jsonencode({
@@ -34,7 +35,7 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
         Action = [
           "rds-db:connect"
         ]
-        Resource = "arn:aws:rds-db:${var.aws_region}:${var.aws_account_id}:dbuser:${aws_db_instance.postgresql.cluster_identifier}/${local.username_password.username}"
+        Resource = "arn:aws:rds-db:${var.aws_region}:${var.aws_account_id}:dbuser:${aws_rds_cluster.postgresql.cluster_identifier}/${local.username_password.username}"
       }
     ]
   })

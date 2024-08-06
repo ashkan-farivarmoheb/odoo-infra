@@ -26,7 +26,7 @@ on:
 
 jobs:
   delete_cluster:
-    name: Delete an EFS for ${{ inputs.target-env }}
+    name: Delete a RDS for ${{ inputs.target-env }}
     permissions:
       contents: none
     runs-on: ubuntu-latest
