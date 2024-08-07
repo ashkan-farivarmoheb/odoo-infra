@@ -34,7 +34,7 @@ resource "aws_rds_cluster" "postgresql" {
   cluster_identifier      = local.name
   engine                  = "postgres"
   engine_version          = "${var.engine_version}"
-  database_name           = "${var.project}"
+  database_name           = "postgres"
   master_username         = local.username_password.username
   master_password         = local.username_password.password
   db_subnet_group_name    = aws_db_subnet_group.subnet_group.name
