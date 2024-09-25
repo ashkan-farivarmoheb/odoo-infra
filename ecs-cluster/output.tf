@@ -1,7 +1,11 @@
-output "efs_file_system_id" {
-  value = aws_efs_file_system.efs.id
+output "ecs_cluster_id" {
+  value = aws_ecs_cluster.odoo.id
 }
 
-output "efs_access_point_ids" {
-  value = aws_efs_access_point.odoo_access.id
+output "ecs_cluster_arn" {
+  value = aws_ecs_cluster.odoo.arn
+}
+
+output "ecs_cluster_name" {
+  value = aws_ecs_cluster.odoo.name
 }
