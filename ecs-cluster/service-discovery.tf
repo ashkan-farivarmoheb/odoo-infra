@@ -1,5 +1,5 @@
 resource "aws_service_discovery_private_dns_namespace" "service_discovery_dns" {
-  name        = "${var.environment}-${var.project}.local"
+  name        = "${var.environment}-${var.project}"
   description = "${var.environment}-${var.project} private dns namespace"
   vpc         = data.aws_vpc.odoo.id
 }
