@@ -1,4 +1,4 @@
-data "aws_vpcs" "odoo" {
+data "aws_vpc" "odoo" {
   filter {
     name   = "tag:Name"
     values = ["${var.environment}-${var.project}-vpc"]
