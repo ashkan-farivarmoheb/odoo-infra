@@ -8,7 +8,7 @@ data "aws_vpc" "odoo" {
 data "aws_subnets" "private-odoo" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpcs.odoo.ids[0]]
+    values = [data.aws_vpc.odoo.id]
   }
   filter {
     name   = "map-public-ip-on-launch"
@@ -19,7 +19,7 @@ data "aws_subnets" "private-odoo" {
 data "aws_subnets" "public-odoo" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpcs.odoo.ids[0]]
+    values = [data.aws_vpc.odoo.id]
   }
   filter {
     name   = "map-public-ip-on-launch"
@@ -30,7 +30,7 @@ data "aws_subnets" "public-odoo" {
 data "aws_security_groups" "vpc-odoo-asg" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpcs.odoo.ids[0]]
+    values = [data.aws_vpc.odoo.id]
   }
   filter {
     name = "group-name"
