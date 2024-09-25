@@ -1,14 +1,14 @@
-resource "aws_service_discovery_private_dns_namespace" "service_discovery" {
+resource "aws_service_discovery_private_dns_namespace" "service_discovery_dns" {
   name        = "${var.environment}-${var.project}"
   description = "${var.environment}-${var.project} private dns namespace"
-  vpc         = data.aws_vpcs.odoo.id
+  vpc         = data.aws_vpc.odoo.id
 }
 
-resource "aws_service_discovery_service" "example" {
-  name = "odoo-service"
+resource "aws_service_discovery_service" "service_discovery" {
+  name = "${var.environment}-${var.project}-discovery"
 
   dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.service_discovery.id
+    namespace_id = aws_service_discovery_private_dns_namespace.service_discovery_dns.id
 
     dns_records {
       ttl  = 10
