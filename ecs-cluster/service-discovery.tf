@@ -5,7 +5,7 @@ resource "aws_service_discovery_private_dns_namespace" "service_discovery_dns" {
 }
 
 resource "aws_service_discovery_service" "service_discovery" {
-  name = "discovery"
+  name = "${var.environment}-${var.project}-discovery"
 
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.service_discovery_dns.id
