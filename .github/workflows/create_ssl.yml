@@ -52,13 +52,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Variables
-        id: vars
-        uses: actions/github-script@v3
-        with:
-          script: |
-            core.exportVariable('bucket_name', 'ssl-bucket');
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -80,11 +73,11 @@ jobs:
         working-directory: ssl
         
       - name: Plan Terraform changes
-        run: terraform plan -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="bucket_name=${{ env.bucket_name }}" -var="ssl_name=${{ inputs.name }}"
+        run: terraform plan -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
         working-directory: ssl
         
       - name: Apply Terraform changes
-        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="bucket_name=${{ env.bucket_name }}" -var="ssl_name=${{ inputs.name }}"
+        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
         working-directory: ssl
 
       - name: Upload SSL files to S3
