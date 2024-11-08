@@ -1,0 +1,95 @@
+name: Create SSL
+
+on:
+  workflow_dispatch: # Enable manual triggering
+    inputs:
+      name:
+        required: true
+        type: string
+      domain:
+        required: true
+        type: string
+      fqdns:
+        type: string
+        default: 'example.com,subddomain.example.com'
+      environment:
+        required: true
+        type: choice
+        options:
+          - nonprod
+          - prod
+
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string  
+      domain:
+        required: true
+        type: string
+      fqdns:
+        type: string
+        default: 'example.com,subddomain.example.com'
+
+    secrets:
+      AWS_REGION:
+        required: true
+      AWS_ACCOUNT_ID:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  deploy:
+    name: Create a SSL for ${{ inputs.domain }}
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Variables
+        id: vars
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.exportVariable('bucket_name', 'ssl-bucket');
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.0  # Specify the Terraform version to use
+
+      - name: Initialize Terraform
+        run: terraform init -backend-config=hcl/${{ inputs.environment }}.hcl
+        working-directory: ssl
+        
+      - name: Validate Terraform configuration
+        run: terraform validate
+        working-directory: ssl
+        
+      - name: Plan Terraform changes
+        run: terraform plan -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="bucket_name=${{ env.bucket_name }}" -var="ssl_name=${{ inputs.name }}"
+        working-directory: ssl
+        
+      - name: Apply Terraform changes
+        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="bucket_name=${{ env.bucket_name }}" -var="ssl_name=${{ inputs.name }}"
+        working-directory: ssl
+
+      - name: Upload SSL files to S3
+        run: |
+          aws s3 cp ssl/scripts s3://${{ env.bucket_name }}/${{ inputs.name }}/ --recursive
+
+      - name: List Uploaded Files
+        run: aws s3 ls s3://${{ env.bucket_name }}/${{ inputs.name }}/
