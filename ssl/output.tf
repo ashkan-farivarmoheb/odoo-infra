@@ -1,5 +1,5 @@
 output "bucket_name" {
-  value = aws_s3_bucket.my_bucket.bucket
+  value = aws_s3_bucket.my_bucket[0].bucket
 }
 
 output "folder_name" {
