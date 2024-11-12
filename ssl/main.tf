@@ -25,5 +25,9 @@ resource "aws_s3_object" "upload_files" {
   source = "scripts/${each.value}"
   acl    = "private"
 
-  depends_on = [null_resource.run_shell_script]
+  depends_on = [
+    null_resource.run_shell_script,
+    aws_s3_bucket.my_bucket, # Ensures bucket creation completes before upload
+    data.aws_s3_bucket.existing_bucket # Ensures data lookup is considered
+  ]
 }
