@@ -3,6 +3,12 @@ name: Create SSL
 on:
   workflow_dispatch: # Enable manual triggering
     inputs:
+      target-env:
+        required: true
+        type: choice
+        options:
+          - develop
+          - prod
       name:
         required: true
         type: string
@@ -12,15 +18,12 @@ on:
       fqdns:
         type: string
         default: 'example.com,subddomain.example.com'
-      environment:
-        required: true
-        type: choice
-        options:
-          - nonprod
-          - prod
 
   workflow_call:
     inputs:
+      target-env:
+        required: true
+        type: string
       name:
         required: true
         type: string  
@@ -47,6 +50,8 @@ jobs:
     permissions:
       contents: none
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.target-env }}
 
     steps:
       - name: Checkout code
@@ -65,7 +70,7 @@ jobs:
           terraform_version: 1.1.0  # Specify the Terraform version to use
 
       - name: Initialize Terraform
-        run: terraform init -backend-config=hcl/${{ inputs.environment }}.hcl
+        run: terraform init -backend-config=hcl/${{ inputs.target-env }}.hcl
         working-directory: ssl
         
       - name: Validate Terraform configuration
@@ -73,11 +78,11 @@ jobs:
         working-directory: ssl
         
       - name: Plan Terraform changes
-        run: terraform plan -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
+        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
         working-directory: ssl
         
       - name: Apply Terraform changes
-        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.environment }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
+        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
         working-directory: ssl
 
       - name: Upload SSL files to S3
