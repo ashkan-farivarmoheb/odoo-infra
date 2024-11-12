@@ -1,6 +1,6 @@
 # Local value to set the bucket name
 locals {
-  bucket_name = var.bucket_name
+  bucket_name = "${var.environment}-ssl-service-${var.ssl_name}"
 }
 
 # Create the S3 bucket if it doesn't exist already
