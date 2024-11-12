@@ -1,7 +1,7 @@
-
 resource "aws_s3_bucket" "my_bucket" {
   bucket = var.bucket_name
-  acl = "private"
+  acl    = "private"
+  count  = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
 }
 
 resource "null_resource" "run_shell_script" {
