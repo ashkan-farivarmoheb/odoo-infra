@@ -95,10 +95,11 @@ jobs:
       - name: Upload SSL files to S3
         run: |
           pwd
+          cd scripts
+          pwd
           ls -la
           aws s3 cp scripts s3://${{env.bucket_name}}/${{ inputs.name }}/ --recursive
         working-directory: ssl
-
 
       - name: List Uploaded Files
         run: aws s3 ls s3://${{env.bucket_name}}/${{ inputs.name }}/
