@@ -1,15 +1,6 @@
-# Generate a random suffix using current time to make it unique on each run
-resource "random_id" "suffix" {
-  byte_length = 4
-  keepers = {
-    # The value here ensures that `random_id.suffix` changes every time the configuration is applied
-    unique_key = "${timestamp()}"
-  }
-}
-
 # Local value to set a unique bucket name each time
 locals {
-  bucket_name = "${var.environment}-ssl-service-${var.ssl_name}-${random_id.suffix.hex}"
+  bucket_name = "${var.environment}-ssl-service-${var.ssl_name}"
 }
 
 # Create the S3 bucket if it doesn't exist already
@@ -18,9 +9,6 @@ resource "aws_s3_bucket" "my_bucket" {
   acl    = "private"
 
   count  = var.create_bucket ? 1 : 0
-  lifecycle {
-    create_before_destroy = true
-  }
 
   # Always create a new bucket, without relying on the `count`
   force_destroy = true
