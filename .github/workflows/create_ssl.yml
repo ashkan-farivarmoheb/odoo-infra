@@ -62,7 +62,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const bucket = ${{inputs.target-env}}-ssl-service-${{inputs.name}}
+            const bucket = `${{inputs.target-env}}-ssl-service-${{inputs.name}}`
             core.exportVariable('bucket_name', bucket);
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
