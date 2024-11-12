@@ -1,7 +1,14 @@
+# Local value to set the bucket name
+locals {
+  bucket_name = var.bucket_name
+}
+
+# Create the S3 bucket if it doesn't exist already
 resource "aws_s3_bucket" "my_bucket" {
-  bucket = var.bucket_name
+  bucket = local.bucket_name
   acl    = "private"
-  count  = data.aws_s3_bucket.existing_bucket.id == "" ? 1 : 0
+
+  count  = var.create_bucket ? 1 : 0
 }
 
 resource "null_resource" "run_shell_script" {
@@ -19,15 +26,11 @@ resource "null_resource" "run_shell_script" {
 
 resource "aws_s3_object" "upload_files" {
   for_each = fileset("scripts", "*")
-  bucket = data.aws_s3_bucket.existing_bucket.id != "" ? data.aws_s3_bucket.existing_bucket.bucket : aws_s3_bucket.my_bucket[0].bucket
+  bucket = local.bucket_name
 
   key    = "${var.ssl_name}/${each.value}"
   source = "scripts/${each.value}"
   acl    = "private"
 
-  depends_on = [
-    null_resource.run_shell_script,
-    aws_s3_bucket.my_bucket, # Ensures bucket creation completes before upload
-    data.aws_s3_bucket.existing_bucket # Ensures data lookup is considered
-  ]
+  depends_on = [null_resource.run_shell_script, aws_s3_bucket.my_bucket]
 }

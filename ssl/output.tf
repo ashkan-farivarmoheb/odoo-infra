@@ -1,5 +1,6 @@
+# Output the bucket name
 output "bucket_name" {
-  value = data.aws_s3_bucket.existing_bucket.id != "" ? data.aws_s3_bucket.existing_bucket.bucket : aws_s3_bucket.my_bucket[0].bucket
+  value = local.bucket_name
 }
 
 output "folder_name" {
