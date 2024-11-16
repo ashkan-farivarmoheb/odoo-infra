@@ -12,7 +12,6 @@ resource "null_resource" "run_shell_script" {
   # Using `triggers` to force execution whenever domain or FQDN list changes
   triggers = {
     domain_name = var.domain_name
-    fqdn_list   = var.fqdn_list
     ssl_name    = var.ssl_name
   }
 
