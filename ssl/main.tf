@@ -20,7 +20,7 @@ resource "null_resource" "run_shell_script" {
 
 resource "aws_s3_object" "upload_files" {
   for_each = fileset("scripts", "*")
-  bucket = data.aws_s3_bucket.existing_bucket
+  bucket = data.aws_s3_bucket.existing_bucket.bucket
 
   key    = "${var.ssl_name}/${each.value}"
   source = "scripts/${each.value}"
