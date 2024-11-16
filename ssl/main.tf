@@ -13,6 +13,7 @@ resource "null_resource" "run_shell_script" {
   triggers = {
     domain_name = var.domain_name
     fqdn_list   = var.fqdn_list
+    ssl_name    = var.ssl_name
   }
 
   depends_on = [data.aws_s3_bucket.existing_bucket]
