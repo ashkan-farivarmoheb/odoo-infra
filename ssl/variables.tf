@@ -28,7 +28,3 @@ variable "fqdn_list" {
   type    = string
   default = "example.com,sub.example.com,another.example.com"
 }
-
-variable "create_bucket" {
-  type = bool
-}
