@@ -9,8 +9,8 @@ variable "aws_account_id" {
   type = string
 }
 
-variable "environment" {
-  description = "environment"
+variable "bucket_name" {
+  description = "bucket name"
   type = string
 }
 

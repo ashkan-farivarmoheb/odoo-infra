@@ -56,6 +56,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Variables
+        id: vars
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.exportVariable('bucket_name', "${{ inputs.target-env }}-ssl-service");
             
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -82,9 +89,13 @@ jobs:
         working-directory: ssl
         
       - name: Plan Terraform changes
-        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="environment=${{ inputs.target-env }}" -var="domain_name=${{ inputs.domain }}" -var="fqdn_list=${{inputs.fqdns}}"  -var="ssl_name=${{ env.folder_name }}"
+        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="bucket_name=${{ env.bucket_name }}" -var="domain_name=${{ inputs.domain }}" -var="fqdn_list=${{inputs.fqdns}}"  -var="ssl_name=${{ env.folder_name }}"
         working-directory: ssl
         
       - name: Apply Terraform changes
-        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="environment=${{ inputs.target-env }}" -var="domain_name=${{ inputs.domain }}" -var="fqdn_list=${{inputs.fqdns}}" -var="ssl_name=${{ env.folder_name }}"
+        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="bucket_name=${{ env.bucket_name }}" -var="domain_name=${{ inputs.domain }}" -var="fqdn_list=${{inputs.fqdns}}" -var="ssl_name=${{ env.folder_name }}"
         working-directory: ssl
+      
+      - name: Upload SSL files to S3
+        run: |
+          aws s3 cp ssl s3://${{ env.bucket_name }}/${{ env.folder_name }}/ --recursive
