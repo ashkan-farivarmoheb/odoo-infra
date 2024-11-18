@@ -1,8 +1,3 @@
-# Output the bucket name
-output "bucket_name" {
-  value = local.bucket_name
-}
-
 output "folder_name" {
   value = "${var.ssl_name}"
 }

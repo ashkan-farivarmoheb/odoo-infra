@@ -7,7 +7,7 @@ on:
         required: true
         type: choice
         options:
-          - develop
+          - nonprod
           - prod
       name:
         required: true
@@ -62,14 +62,18 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const bucket = ${{inputs.target-env}}-ssl-service-${{inputs.name}}
-            core.exportVariable('bucket_name', bucket);
+            core.exportVariable('bucket_name', "${{ inputs.target-env }}-ssl-service");
+            
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Generate Unique Folder Name
+        id: folder_name
+        run: echo "folder_name=${{ inputs.name }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -85,17 +89,13 @@ jobs:
         working-directory: ssl
         
       - name: Plan Terraform changes
-        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="environment=${{ inputs.target-env }}" -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
+        run: terraform plan -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="bucket_name=${{ env.bucket_name }}" -var="domain_name=${{ inputs.domain }}" -var="fqdn_list=${{inputs.fqdns}}"  -var="ssl_name=${{ env.folder_name }}"
         working-directory: ssl
         
       - name: Apply Terraform changes
-        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="environment=${{ inputs.target-env }}" -var="domain_name=${{ inputs.domain }}" -var="ssl_name=${{ inputs.name }}"
+        run: terraform apply -auto-approve -var-file=tfvars/${{ inputs.target-env }}.auto.tfvars -var="bucket_name=${{ env.bucket_name }}" -var="domain_name=${{ inputs.domain }}" -var="fqdn_list=${{inputs.fqdns}}" -var="ssl_name=${{ env.folder_name }}"
         working-directory: ssl
-
+      
       - name: Upload SSL files to S3
         run: |
-        
-          aws s3 cp scripts s3://${{env.bucket_name}}/${{ inputs.name }}/ --recursive
-
-      - name: List Uploaded Files
-        run: aws s3 ls s3://${{env.bucket_name}}/${{ inputs.name }}/
+          aws s3 cp ssl/scripts s3://${{ env.bucket_name }}/${{ env.folder_name }}/ --recursive

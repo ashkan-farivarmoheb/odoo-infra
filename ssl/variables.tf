@@ -9,8 +9,8 @@ variable "aws_account_id" {
   type = string
 }
 
-variable "environment" {
-  description = "environment"
+variable "bucket_name" {
+  description = "bucket name"
   type = string
 }
 
@@ -27,8 +27,4 @@ variable "ssl_name" {
 variable "fqdn_list" {
   type    = string
   default = "example.com,sub.example.com,another.example.com"
-}
-
-variable "create_bucket" {
-  type = bool
 }

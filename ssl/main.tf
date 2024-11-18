@@ -1,36 +1,32 @@
-# Local value to set the bucket name
-locals {
-  bucket_name = "${var.environment}-ssl-service-${var.ssl_name}"
-}
-
-# Create the S3 bucket if it doesn't exist already
-resource "aws_s3_bucket" "my_bucket" {
-  bucket = local.bucket_name
-  acl    = "private"
-
-  count  = var.create_bucket ? 1 : 0
-}
-
 resource "null_resource" "run_shell_script" {
   provisioner "local-exec" {
     command = <<EOT
       #!/bin/bash
       cd scripts
       chmod +x ./ssl.sh
-      ./ssl.sh ${var.domain_name} ${var.fqdn_list}
+      ./ssl.sh "${var.domain_name}" "${var.fqdn_list}" || { echo "SSL script failed"; exit 1; }
+      echo "SSL files created:"
       ls -l # List files to confirm they were created
     EOT
   }
-  depends_on = [aws_s3_bucket.my_bucket]
+
+  # Using `triggers` to force execution whenever domain or FQDN list changes
+  triggers = {
+    domain_name = var.domain_name
+    fqdn_list   = var.fqdn_list
+    ssl_name    = var.ssl_name
+  }
+
+  depends_on = [data.aws_s3_bucket.existing_bucket]
 }
 
 resource "aws_s3_object" "upload_files" {
-  for_each = fileset("scripts", "*")
-  bucket = local.bucket_name
+  for_each = fileset("scripts", "*") # Ensure scripts/* files are detected
+  bucket   = data.aws_s3_bucket.existing_bucket.bucket
 
-  key    = "${var.ssl_name}/${each.value}"
-  source = "scripts/${each.value}"
-  acl    = "private"
+  key      = "${var.ssl_name}/${each.value}" # Unique folder for each run
+  source   = "scripts/${each.value}"
+  acl      = "private"
 
-  depends_on = [null_resource.run_shell_script, aws_s3_bucket.my_bucket]
+  depends_on = [null_resource.run_shell_script]
 }
