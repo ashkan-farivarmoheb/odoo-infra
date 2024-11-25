@@ -13,7 +13,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 # Create ECS Capacity Provider
 resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
-  count = length(data.aws_ecs_capacity_provider.existing_capacity_provider) == 0 ? 1 : 0
+  count = length(data.external.check_capacity_provider.result) == 0 ? 1 : 0
 
   name = "${var.environment}-${var.project}-ecs-capacity-provider"
 

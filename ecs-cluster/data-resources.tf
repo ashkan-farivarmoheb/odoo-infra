@@ -38,6 +38,11 @@ data "aws_security_groups" "vpc-odoo-asg" {
   }
 }
 
-data "aws_ecs_capacity_provider" "existing_capacity_provider" {
-  name = "${var.environment}-${var.project}-ecs-capacity-provider"
+data "external" "check_capacity_provider" {
+  program = ["bash", "-c", <<EOT
+aws ecs describe-capacity-providers \
+  --query "capacityProviders[?name=='${var.environment}-${var.project}-ecs-capacity-provider'].name" \
+  --output text
+EOT
+  ]
 }
