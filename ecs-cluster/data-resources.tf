@@ -42,7 +42,7 @@ data "external" "check_capacity_provider" {
   program = ["bash", "-c", <<EOT
 aws ecs describe-capacity-providers \
   --query "capacityProviders[?name=='${var.environment}-${var.project}-ecs-capacity-provider'].name" \
-  --output text
+  --output json | jq -r 'if . | length > 0 then {"exists": "true"} else {"exists": "false"} end'
 EOT
   ]
 }
