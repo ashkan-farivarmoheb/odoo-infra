@@ -13,8 +13,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 # Create ECS Capacity Provider
 resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
-  count = length(data.external.check_capacity_provider.result) == 0 ? 1 : 0
-
+  count = data.external.check_capacity_provider.result.exists == "true" ? 0 : 1
   name = "${var.environment}-${var.project}-ecs-capacity-provider"
 
   auto_scaling_group_provider {
@@ -30,7 +29,11 @@ resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
 
 resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_provider" {
  cluster_name = aws_ecs_cluster.ecs_cluster.name
- capacity_providers = [for cp in aws_ecs_capacity_provider.ecs_capacity_provider : cp.name]
+ capacity_providers = [
+    length(aws_ecs_capacity_provider.ecs_capacity_provider) > 0 
+    ? aws_ecs_capacity_provider.ecs_capacity_provider[0].name 
+    : "default"
+  ]
 
 
  default_capacity_provider_strategy {
