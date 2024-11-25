@@ -37,5 +37,5 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_provider" {
    weight            = 1
    capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
  }
-  depends_on = [ aws_ecs_cluster.ecs_cluster ]
+  depends_on = [ aws_ecs_cluster.ecs_cluster, aws_ecs_capacity_provider.ecs_capacity_provider ]
 }
