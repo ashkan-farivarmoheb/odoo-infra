@@ -30,12 +30,13 @@ resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
 
 resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_provider" {
  cluster_name = aws_ecs_cluster.ecs_cluster.name
- capacity_providers = [ aws_ecs_capacity_provider.ecs_capacity_provider.name ]
+ capacity_providers = [for cp in aws_ecs_capacity_provider.ecs_capacity_provider : cp.name]
+
 
  default_capacity_provider_strategy {
    base              = 0
    weight            = 1
-   capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
+   capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider[0].name
  }
   depends_on = [ aws_ecs_cluster.ecs_cluster, aws_ecs_capacity_provider.ecs_capacity_provider ]
 }
