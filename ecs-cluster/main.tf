@@ -29,15 +29,17 @@ resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
 
 resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_provider" {
  cluster_name = aws_ecs_cluster.ecs_cluster.name
+
+
  capacity_providers = [
-    length(aws_ecs_capacity_provider.ecs_capacity_provider) > 0 ? aws_ecs_capacity_provider.ecs_capacity_provider[0].name : "FARGATE"
-  ]
+    data.external.check_capacity_provider.result.exists == "true" ? "${var.environment}-${var.project}-ecs-capacity-provider" : "${var.environment}-${var.project}"
+    ]
 
+  default_capacity_provider_strategy {
+    base              = 0
+    weight            = 1
+    capacity_provider = data.external.check_capacity_provider.result.exists == "true" ? "${var.environment}-${var.project}-ecs-capacity-provider" : "${var.environment}-${var.project}"
+  }
 
- default_capacity_provider_strategy {
-   base              = 0
-   weight            = 1
-   capacity_provider = length(aws_ecs_capacity_provider.ecs_capacity_provider) > 0 ? aws_ecs_capacity_provider.ecs_capacity_provider[0].name : "FARGATE"
- }
   depends_on = [ aws_ecs_cluster.ecs_cluster, aws_ecs_capacity_provider.ecs_capacity_provider ]
 }
