@@ -37,3 +37,7 @@ data "aws_security_groups" "vpc-odoo-asg" {
     values = [ "${var.environment}-${var.project}-default-sg" ]
   }
 }
+
+data "aws_ecs_capacity_provider" "existing_capacity_provider" {
+  name = "${var.environment}-${var.project}-ecs-capacity-provider"
+}

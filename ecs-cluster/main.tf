@@ -11,20 +11,22 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   }
 }
 
+# Create ECS Capacity Provider
 resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
- name = "${var.environment}-${var.project}-ecs-capacity-provider"
+  count = length(data.aws_ecs_capacity_provider.existing_capacity_provider) == 0 ? 1 : 0
 
- auto_scaling_group_provider {
-   auto_scaling_group_arn = aws_autoscaling_group.ecs_asg.arn
+  name = "${var.environment}-${var.project}-ecs-capacity-provider"
 
-   managed_scaling {
-     status                    = "ENABLED"
-     target_capacity           = 100
-   }
-   managed_termination_protection = "DISABLED"
- }
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.ecs_asg.arn
+
+    managed_scaling {
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+    managed_termination_protection = "DISABLED"
+  }
 }
-
 
 resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_provider" {
  cluster_name = aws_ecs_cluster.ecs_cluster.name
