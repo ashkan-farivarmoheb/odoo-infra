@@ -1,0 +1,48 @@
+name: Destroy Infrastructure Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      target-env:
+        description: 'Environment to deploy'
+        required: true
+        type: choice
+        options:
+          - develop
+          - sit
+          - stg
+          - prod
+
+jobs:
+
+  ecs-cluster:
+    name: Destroy ECS Cluster
+    uses: ./.github/workflows/delete_ecs_cluster.yml
+    with:
+      target-env: ${{ inputs.target-env }}
+    secrets: inherit
+  
+  efs:
+    name: Destroy EFS
+    uses: ./.github/workflows/delete_efs.yml
+    with:
+      target-env: ${{ inputs.target-env }}
+    secrets: inherit
+
+  rds:
+    name: Destroy RDS
+    uses: ./.github/workflows/delete_rds.yml
+    with:
+      target-env: ${{ inputs.target-env }}
+    secrets: inherit
+  
+  vpc:
+    name: Destroy VPC
+    needs: 
+      - efs
+      - rds
+      - ecs-cluster
+    uses: ./.github/workflows/delete_vpc.yml
+    with:
+      target-env: ${{ inputs.target-env }}
+    secrets: inherit
