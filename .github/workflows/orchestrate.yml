@@ -27,10 +27,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        resource: [efs, ecs-cluster, rds]
+        resource-config:
+          - name: efs
+            path: create_efs.yml
+          - name: ecs-cluster
+            path: create_ecs-cluster.yml
+          - name: rds
+            path: create_rds.yml
     steps:
-      - name: Deploy ${{ matrix.resource }}
-        uses: ./.github/workflows/create_${{ matrix.resource }}.yml
-        with:
+      - name: Deploy ${{ matrix.resource-config.name }}
+      uses: ./.github/workflows/${{ matrix.resource-config.path }}
+      with:
           target-env: ${{ inputs.target-env }}
     secrets: inherit
