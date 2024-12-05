@@ -1,0 +1,45 @@
+name: Infrastructure Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      target-env:
+        description: 'Environment to deploy'
+        required: true
+        type: choice
+        options:
+          - nonprod
+          - prod
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - apply
+          - destroy
+      snapshot:
+        description: 'Create snapshot'
+        type: boolean
+        default: false
+
+jobs:
+  vpc:
+    name: Deploy VPC
+    uses: ./.github/workflows/create_vpc.yml
+    with:
+      target-env: ${{ inputs.target-env }}
+    secrets: inherit
+
+  parallel-resources:
+    needs: vpc
+    name: Deploy Parallel Resources
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        resource: [efs, ecs-cluster, rds]
+    steps:
+      - name: Deploy ${{ matrix.resource }}
+        uses: ./.github/workflows/create_${{ matrix.resource }}.yml
+        with:
+          target-env: ${{ inputs.target-env }}
+        secrets: inherit
