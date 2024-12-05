@@ -34,9 +34,9 @@ jobs:
             path: create_ecs-cluster.yml
           - name: rds
             path: create_rds.yml
-    steps:
-      - name: Deploy ${{ matrix.resource-config.name }}
-      uses: ./.github/workflows/${{ matrix.resource-config.path }}
-      with:
-          target-env: ${{ inputs.target-env }}
-    secrets: inherit
+    # steps:
+    #   - name: Deploy ${{ matrix.resource-config.name }}
+    #     uses: ./.github/workflows/${{ matrix.resource-config.path }}
+    #     with:
+    #       target-env: ${{ inputs.target-env }}
+    #       secrets: inherit
