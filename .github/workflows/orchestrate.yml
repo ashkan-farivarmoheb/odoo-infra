@@ -21,19 +21,19 @@ jobs:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
 
-  parallel-resources:
-    needs: vpc
-    name: Deploy Parallel Resources
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        resource-config:
-          - name: efs
-            path: create_efs.yml
-          - name: ecs-cluster
-            path: create_ecs-cluster.yml
-          - name: rds
-            path: create_rds.yml
+  # parallel-resources:
+  #   needs: vpc
+  #   name: Deploy Parallel Resources
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       resource-config:
+  #         - name: efs
+  #           path: create_efs.yml
+  #         - name: ecs-cluster
+  #           path: create_ecs-cluster.yml
+  #         - name: rds
+  #           path: create_rds.yml
     # steps:
     #   - name: Deploy ${{ matrix.resource-config.name }}
     #     uses: ./.github/workflows/${{ matrix.resource-config.path }}
