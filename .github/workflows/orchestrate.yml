@@ -8,19 +8,10 @@ on:
         required: true
         type: choice
         options:
-          - nonprod
+          - develop
+          - sit
+          - stg
           - prod
-      action:
-        description: 'Action to perform'
-        required: true
-        type: choice
-        options:
-          - apply
-          - destroy
-      snapshot:
-        description: 'Create snapshot'
-        type: boolean
-        default: false
 
 jobs:
   vpc:
