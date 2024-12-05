@@ -33,4 +33,4 @@ jobs:
         uses: ./.github/workflows/create_${{ matrix.resource }}.yml
         with:
           target-env: ${{ inputs.target-env }}
-        secrets: inherit
+    secrets: inherit
