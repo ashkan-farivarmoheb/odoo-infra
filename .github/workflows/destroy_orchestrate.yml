@@ -30,7 +30,7 @@ jobs:
   ecs-cluster:
     name: Destroy ECS Cluster
     uses: ./.github/workflows/delete_ecs_cluster.yml
-    if: ${{ inputs.ecs-cluster == 'true' }}
+    if: ${{ inputs.ecs-cluster == true }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
@@ -38,7 +38,7 @@ jobs:
   efs:
     name: Destroy EFS
     uses: ./.github/workflows/delete_efs.yml
-    if: ${{ inputs.efs == 'true' }}
+    if: ${{ inputs.efs == true }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
@@ -46,7 +46,7 @@ jobs:
   rds:
     name: Destroy RDS
     uses: ./.github/workflows/delete_rds.yml
-    if: ${{ inputs.rds == 'true' }}
+    if: ${{ inputs.rds == true }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
@@ -58,7 +58,7 @@ jobs:
       - rds
       - ecs-cluster
     uses: ./.github/workflows/delete_vpc.yml
-    if: ${{ inputs.vpc == 'true' }}
+    if: ${{ inputs.vpc == true }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
