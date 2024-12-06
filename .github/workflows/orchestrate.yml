@@ -24,6 +24,9 @@ on:
         description: 'CIDR block for the private subnet'
         required: true
         default: '["10.0.10.0/24", "10.0.11.0/24", "10.0.12.0/24"]'
+      vpc:
+        default: false
+        type: boolean
       rds:
         default: false
         type: boolean
@@ -38,6 +41,7 @@ jobs:
   vpc:
     name: Deploy VPC
     uses: ./.github/workflows/create_vpc.yml
+    if: ${{ inputs.vpc == 'true' }}
     with:
       target-env: ${{ inputs.target-env }}
       vpc-cidr: ${{ inputs.vpc-cidr }}
