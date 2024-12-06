@@ -41,7 +41,7 @@ jobs:
   vpc:
     name: Deploy VPC
     uses: ./.github/workflows/create_vpc.yml
-    if: ${{ inputs.vpc == 'true' }}
+    if: ${{ inputs.vpc == true }}
     with:
       target-env: ${{ inputs.target-env }}
       vpc-cidr: ${{ inputs.vpc-cidr }}
@@ -53,7 +53,7 @@ jobs:
     name: Deploy ECS Cluster
     needs: vpc
     uses: ./.github/workflows/create_ecs_cluster.yml
-    if: ${{ inputs.ecs-cluster == 'true' }}
+    if: ${{ inputs.ecs-cluster == true }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
@@ -62,7 +62,7 @@ jobs:
     name: Deploy EFS
     needs: vpc
     uses: ./.github/workflows/create_efs.yml
-    if: ${{ inputs.efs == 'true' }}
+    if: ${{ inputs.efs == true }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
@@ -71,7 +71,7 @@ jobs:
     name: Deploy RDS
     needs: vpc
     uses: ./.github/workflows/create_rds.yml
-    if: ${{ inputs.rds == 'true'}}
+    if: ${{ inputs.rds == true }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
