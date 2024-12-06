@@ -24,6 +24,15 @@ on:
         description: 'CIDR block for the private subnet'
         required: true
         default: '["10.0.10.0/24", "10.0.11.0/24", "10.0.12.0/24"]'
+      rds:
+        default: false
+        type: boolean
+      efs:
+        default: false
+        type: boolean
+      ecs-cluster:
+        default: false
+        type: boolean
 
 jobs:
   vpc:
@@ -40,6 +49,7 @@ jobs:
     name: Deploy ECS Cluster
     needs: vpc
     uses: ./.github/workflows/create_ecs_cluster.yml
+    if: ${{ inputs.ecs-cluster }} == true
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
@@ -48,6 +58,7 @@ jobs:
     name: Deploy EFS
     needs: vpc
     uses: ./.github/workflows/create_efs.yml
+    if: ${{ inputs.efs }} == true
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
@@ -56,6 +67,7 @@ jobs:
     name: Deploy RDS
     needs: vpc
     uses: ./.github/workflows/create_rds.yml
+    if: ${{ inputs.ecs-cluster }} == true
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
