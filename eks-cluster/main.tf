@@ -4,10 +4,10 @@ resource "aws_eks_cluster" "eks_cluster" {
     role_arn = aws_iam_role.eks_cluster_role.arn
 
     vpc_config {
-        # endpoint_private_access = true
-        # endpoint_public_access  = false
         subnet_ids = data.aws_subnets.private-odoo.ids
         security_group_ids = [aws_security_group.eks_cluster_sg.id]
+        endpoint_private_access = true
+        endpoint_public_access  = true
     }
 
     kubernetes_network_config {
@@ -31,20 +31,28 @@ resource "aws_eks_node_group" "eks_node_group" {
   subnet_ids      = data.aws_subnets.private-odoo.ids
 
   scaling_config {
-    desired_size = 2
-    max_size     = 3
-    min_size     = 1
+    desired_size = var.desired_size_asg
+    max_size     = var.max_size_asg
+    min_size     = var.min_size_asg
   }
   
-  # Reference the Launch Template
   launch_template {
     id      = aws_launch_template.eks_launch_template.id
-    version = "$Latest"
+    version = aws_launch_template.eks_launch_template.latest_version
+  }
+
+  update_config {
+    max_unavailable = 1
   }
 
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_policy,
     aws_iam_role_policy_attachment.eks_CNI_policy,
-    aws_iam_role_policy_attachment.eks_instance_policy
+    aws_iam_role_policy_attachment.eks_instance_policy,
+    aws_launch_template.eks_launch_template
   ]
+
+  tags = {
+    "Name" = "${var.environment}-${var.project}-node"
+  }
 }
