@@ -11,6 +11,10 @@ resource "aws_security_group" "eks_cluster_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.environment}-${var.project}-eks-cluster-sg"
+  }
 }
 
 # Security group for EKS worker nodes
@@ -26,34 +30,52 @@ resource "aws_security_group" "eks_worker_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.environment}-${var.project}-eks-worker-sg"
+  }
 }
 
-# Allow worker nodes to communicate with the cluster API server
+# Allow worker nodes to communicate with the cluster API Server
 resource "aws_security_group_rule" "eks_worker_to_cluster" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  security_group_id = aws_security_group.eks_cluster_sg.id
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks_cluster_sg.id
   source_security_group_id = aws_security_group.eks_worker_sg.id
+  description             = "Allow worker nodes to communicate with cluster API Server"
 }
 
-# Allow the cluster to communicate with worker nodes
-resource "aws_security_group_rule" "eks_cluster_to_worker" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  security_group_id = aws_security_group.eks_worker_sg.id
+# Allow cluster control plane to communicate with worker nodes (kubelet)
+resource "aws_security_group_rule" "eks_cluster_to_worker_kubelet" {
+  type                     = "ingress"
+  from_port                = 10250
+  to_port                  = 10250
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks_worker_sg.id
   source_security_group_id = aws_security_group.eks_cluster_sg.id
+  description             = "Allow cluster control plane to communicate with worker kubelet"
 }
 
-# Allow worker nodes to communicate with each other (optional)
+# Allow cluster control plane to communicate with worker nodes (https)
+resource "aws_security_group_rule" "eks_cluster_to_worker_https" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks_worker_sg.id
+  source_security_group_id = aws_security_group.eks_cluster_sg.id
+  description             = "Allow cluster control plane to communicate with worker nodes (https)"
+}
+
+# Allow worker nodes to communicate with each other
 resource "aws_security_group_rule" "eks_worker_self_communication" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 65535
-  protocol          = "tcp"
-  security_group_id = aws_security_group.eks_worker_sg.id
-  cidr_blocks       = ["10.0.0.0/16"] # Use your VPC CIDR
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 65535
+  protocol                 = "-1"  # Allow all protocols
+  security_group_id        = aws_security_group.eks_worker_sg.id
+  source_security_group_id = aws_security_group.eks_worker_sg.id
+  description             = "Allow worker nodes to communicate with each other"
 }
