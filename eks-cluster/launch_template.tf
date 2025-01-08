@@ -25,11 +25,6 @@ resource "aws_launch_template" "eks_launch_template" {
     http_put_response_hop_limit = 2
   }
 
-  # Add instance profile
-  iam_instance_profile {
-    name = aws_iam_instance_profile.eks_node_instance_profile.name
-  }
-
   monitoring {
     enabled = true
   }
@@ -42,7 +37,6 @@ resource "aws_launch_template" "eks_launch_template" {
   }
 
   depends_on = [
-    aws_security_group.eks_worker_sg,
-    aws_iam_instance_profile.eks_node_instance_profile
+    aws_security_group.eks_worker_sg
   ]
 }

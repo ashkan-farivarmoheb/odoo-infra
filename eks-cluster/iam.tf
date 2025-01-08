@@ -62,12 +62,6 @@ resource "aws_iam_role_policy_attachment" "eks_instance_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# Create an instance profile for the EKS nodes
-resource "aws_iam_instance_profile" "eks_node_instance_profile" {
-  name = "eks-node-instance-profile"
-  role = aws_iam_role.eks_node_group_role.name
-}
-
 # Add SSM policy for troubleshooting
 resource "aws_iam_role_policy_attachment" "eks_node_ssm_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
