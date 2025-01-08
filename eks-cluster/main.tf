@@ -10,14 +10,18 @@ resource "aws_eks_cluster" "eks_cluster" {
         security_group_ids = [aws_security_group.eks_cluster_sg.id]
     }
 
-  tags = {
-    Environment = "${var.environment}"
-  }
+    kubernetes_network_config {
+        service_ipv4_cidr = "172.20.0.0/16"
+    }
 
-depends_on = [
-    aws_iam_role_policy_attachment.eks_cluster_policy,
-    aws_iam_role_policy_attachment.eks_vpc_resource_controller_policy
-  ]
+    tags = {
+        Environment = "${var.environment}"
+    }
+
+    depends_on = [
+        aws_iam_role_policy_attachment.eks_cluster_policy,
+        aws_iam_role_policy_attachment.eks_vpc_resource_controller_policy
+    ]
 }
 
 resource "aws_eks_node_group" "eks_node_group" {
