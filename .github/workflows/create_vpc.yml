@@ -50,6 +50,9 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     name: Create a VPC for ${{ inputs.target-env }}
