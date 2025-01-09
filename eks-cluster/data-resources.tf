@@ -37,3 +37,8 @@ data "aws_security_groups" "vpc-odoo-asg" {
     values = [ "${var.environment}-${var.project}-default-sg" ]
   }
 }
+
+# Get the latest EKS-optimized AMI
+data "aws_ssm_parameter" "eks_ami" {
+  name = "/aws/service/eks/optimized-ami/1.31/amazon-linux-2/recommended/image_id"
+}
