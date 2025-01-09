@@ -4,6 +4,7 @@ resource "aws_launch_template" "eks_launch_template" {
   image_id      = var.imageId
   instance_type = var.instance_type
   key_name = "${var.ec2_key_name}"
+
   network_interfaces {
     associate_public_ip_address = false
     security_groups            = [aws_security_group.eks_worker_sg.id]
@@ -33,6 +34,7 @@ resource "aws_launch_template" "eks_launch_template" {
     endpoint           = aws_eks_cluster.eks_cluster.endpoint
     dns_cluster_ip     = cidrhost(aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr, 10)
     ami_id            = var.imageId
+    service_ipv4_cidr = aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr
   }))
 
   lifecycle {
