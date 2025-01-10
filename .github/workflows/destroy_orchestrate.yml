@@ -50,15 +50,15 @@ jobs:
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
-  
+
   vpc:
     name: Destroy VPC
-    needs: 
+    needs:
+      - ecs-cluster
       - efs
       - rds
-      - ecs-cluster
     uses: ./.github/workflows/delete_vpc.yml
-    if: ${{ inputs.vpc == true }}
+    if: ${{ inputs.vpc == true && (inputs.efs || inputs.rds || inputs['ecs-cluster'] || true) }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
