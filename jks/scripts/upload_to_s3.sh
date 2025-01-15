@@ -17,8 +17,7 @@ if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
   echo "Bucket '$BUCKET_NAME' already exists."
 else
   echo "Bucket '$BUCKET_NAME' does not exist. Creating it..."
-  aws s3api create-bucket --bucket "$BUCKET_NAME" \
-    --create-bucket-configuration
+  aws s3api create-bucket --bucket "$BUCKET_NAME"
   echo "Bucket '$BUCKET_NAME' created successfully."
 fi
 
