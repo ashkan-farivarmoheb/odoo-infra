@@ -56,6 +56,7 @@ jobs:
         run: |
           PASSWORD=$(openssl rand -base64 16)
           echo "password=$PASSWORD" >> $GITHUB_ENV
+          echo "$PASSWORD"
         env:
           OPENSSL_CONF: /etc/ssl/
 
@@ -71,7 +72,6 @@ jobs:
             -keypass ${{ env.password }} \
             -validity 365 \
             -dname "CN=tisol.com.au, OU=Technology, O=Trace It Solutions Pty Ltd, L=Melbourne, S=VIC, C=AU"
-          ls
 
       # Step 5: Upload the keystore file as an artifact
       - name: Upload Keystore as Artifact
