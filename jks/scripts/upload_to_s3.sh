@@ -3,6 +3,7 @@
 # Set variables
 BUCKET_NAME="keystores"
 FILE_PATH="./jwt_keystore_${1}_v${2}.jks"
+REGION="${AWS_REGION:-}"
 AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-}"
 # IAM_USER="${IAM_USER:-YourUserName}"
 
@@ -17,7 +18,8 @@ if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
   echo "Bucket '$BUCKET_NAME' already exists."
 else
   echo "Bucket '$BUCKET_NAME' does not exist. Creating it..."
-  aws s3api create-bucket --bucket "$BUCKET_NAME"
+  aws s3api create-bucket --bucket "$BUCKET_NAME" --region "$REGION" \
+    --create-bucket-configuration LocationConstraint="$REGION"
   echo "Bucket '$BUCKET_NAME' created successfully."
 fi
 
