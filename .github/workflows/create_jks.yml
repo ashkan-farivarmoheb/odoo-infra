@@ -79,6 +79,7 @@ jobs:
         with:
           name: jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}
           path: ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks
+          retention-days: 1
 
       # Step 6: Configure AWS credentials
       - name: Configure AWS credentials
@@ -95,4 +96,4 @@ jobs:
           ./upload_to_s3.sh ${{ inputs.target-env }} ${{ inputs.version }}
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
-        working-directory: scripts
+        working-directory: jks/scripts
