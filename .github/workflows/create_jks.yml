@@ -36,6 +36,7 @@ on:
 jobs:
   generate-keystore:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.target-env }}
 
     steps:
       # Step 1: Checkout the repository
@@ -75,7 +76,7 @@ jobs:
       - name: Upload Keystore as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: jwt_keystore
+          name: jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}
           path: ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks
 
       - name: Configure AWS credentials
