@@ -21,7 +21,7 @@ fi
 # Step 2: Upload the file to S3
 if [ -f "$FILE_PATH" ]; then
   echo "Uploading $FILE_PATH to S3 bucket $BUCKET_NAME..."
-  aws s3 cp "$FILE_PATH" "s3://$BUCKET_NAME/${1}/v${2}"
+  aws s3 cp "$FILE_PATH" "s3://$BUCKET_NAME/${1}/v${2}/" --recursive
   if [ $? -eq 0 ]; then
     echo "File uploaded successfully to s3://$BUCKET_NAME/${1}/v${2}"
   else
