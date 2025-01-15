@@ -1,0 +1,91 @@
+name: Generate Keystore
+
+on:
+  workflow_dispatch: # Enable manual triggering
+    inputs:
+      target-env:
+        required: true
+        type: choice
+        options:
+          - nonprod
+          - prod
+      version:
+        required: true
+        type: string
+        default: '1'
+
+  workflow_call:
+    inputs:
+      target-env:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+
+    secrets:
+      AWS_REGION:
+        required: true
+      AWS_ACCOUNT_ID:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  generate-keystore:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Java
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # Use Eclipse Temurin distribution
+          java-version: '17'      # Specify the Java version (adjust as needed)
+
+      # Step 3: Generate a secure password
+      - name: Generate Password
+        id: password
+        run: |
+          PASSWORD=$(openssl rand -base64 16)
+          echo "password=$PASSWORD" >> $GITHUB_ENV
+        env:
+          OPENSSL_CONF: /etc/ssl/
+
+      # Step 4: Run keytool command
+      - name: Generate Keystore
+        run: |
+          keytool -genkeypair \
+            -alias portal_auth \
+            -keyalg RSA \
+            -keysize 2048 \
+            -keystore ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks \
+            -storepass ${{ env.password }} \
+            -keypass ${{ env.password }} \
+            -validity 365 \
+            -dname "CN=tisol.com.au, OU=Technology, O=Trace It Solutions Pty Ltd, L=Melbourne, S=VIC, C=AU"
+
+      # Step 5: Upload the keystore file as an artifact
+      - name: Upload Keystore as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jwt_keystore
+          path: ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Optional Step: Upload keystore to S3
+      - name: Upload Keystore to S3
+        run: |
+          aws s3 cp ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks s3://keystores/jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks
