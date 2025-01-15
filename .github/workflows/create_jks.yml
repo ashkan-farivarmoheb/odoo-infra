@@ -71,6 +71,7 @@ jobs:
             -keypass ${{ env.password }} \
             -validity 365 \
             -dname "CN=tisol.com.au, OU=Technology, O=Trace It Solutions Pty Ltd, L=Melbourne, S=VIC, C=AU"
+          ls
 
       # Step 5: Upload the keystore file as an artifact
       - name: Upload Keystore as Artifact
@@ -79,6 +80,7 @@ jobs:
           name: jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}
           path: ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks
 
+      # Step 6: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -86,7 +88,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Optional Step: Upload keystore to S3
-      - name: Upload Keystore to S3
+      # Step 7: Run the upload script
+      - name: Validate and Upload to S3
         run: |
-          aws s3 cp ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks s3://keystores/jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks
+          chmod +x upload_to_s3.sh
+          ./upload_to_s3.sh ${{ inputs.target-env }} ${{ inputs.version }}
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
+        working-directory: scripts
