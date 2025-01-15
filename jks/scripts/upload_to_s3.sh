@@ -44,9 +44,16 @@ keytool -export \
   -keystore "$FILE_PATH" \
   -storepass "$PASSWORD"
 
-if [ $? -eq 0 ]; then
-  echo "Public key exported successfully to $OUTPUT_FILE"
+if [ -f "$OUTPUT_FILE" ]; then
+  echo "Uploading $OUTPUT_FILE to S3 bucket $BUCKET_NAME..."
+  aws s3 cp $OUTPUT_FILE s3://$BUCKET_NAME/${1}/v${2}/$TIMESTAMP/
+  if [ $? -eq 0 ]; then
+    echo "Public key exported successfully to s3://$BUCKET_NAME/${1}/v${2}/$TIMESTAMP/"
+  else
+    echo "Failed to export the public key. Please check the logs for details."
+    exit 1
+  fi
 else
-  echo "Failed to export the public key. Please check the logs for details."
+  echo "File $FILE_PATH does not exist. Please check the file path and try again."
   exit 1
 fi
