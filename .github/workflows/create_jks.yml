@@ -92,9 +92,8 @@ jobs:
       # Step 7: Run the upload script
       - name: Validate and Upload to S3
         run: |
-          chmod +x upload_to_s3.sh
-          ./upload_to_s3.sh ${{ inputs.target-env }} ${{ inputs.version }}
+          chmod +x jks/scripts/upload_to_s3.sh
+          bash jks/scripts/upload_to_s3.sh ${{ inputs.target-env }} ${{ inputs.version }}
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
           AWS_REGION: ${{ secrets.AWS_REGION}}
-        working-directory: jks/scripts
