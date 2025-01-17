@@ -7,7 +7,8 @@ on:
         required: true
         type: choice
         options:
-          - nonprod
+          - develop
+          - sit
           - prod
       version:
         required: true
