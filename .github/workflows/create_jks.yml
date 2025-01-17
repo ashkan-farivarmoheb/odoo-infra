@@ -68,7 +68,7 @@ jobs:
       - name: Generate Keystore
         run: |
           keytool -genkeypair \
-            -alias portal_auth \
+            -alias jwt \
             -keyalg RSA \
             -keysize 2048 \
             -keystore ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks \
