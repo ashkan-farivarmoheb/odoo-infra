@@ -54,17 +54,34 @@ jobs:
           distribution: 'temurin' # Use Eclipse Temurin distribution
           java-version: '17'      # Specify the Java version (adjust as needed)
 
-      # Step 3: Generate a secure password
+      # Step 3: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Step 4: Generate a secure password
       - name: Generate Password
         id: password
         run: |
           PASSWORD=$(openssl rand -base64 16)
           echo "password=$PASSWORD" >> $GITHUB_ENV
+
+          # Store the password in AWS SSM Parameter Store
+          aws ssm put-parameter \
+            --name "/keystore/${{ inputs.target-env }}/v${{ inputs.version }}/password" \
+            --value "$PASSWORD" \
+            --type "SecureString" \
+            --overwrite \
+            --region "${{ secrets.AWS_REGION }}"
+
           echo "$PASSWORD"
         env:
           OPENSSL_CONF: /etc/ssl/
 
-      # Step 4: Run keytool command
+      # Step 5: Run keytool command
       - name: Generate Keystore
         run: |
           keytool -genkeypair \
@@ -77,21 +94,13 @@ jobs:
             -validity 365 \
             -dname "CN=tisol.com.au, OU=Technology, O=Trace It Solutions Pty Ltd, L=Melbourne, S=VIC, C=AU"
 
-      # Step 5: Upload the keystore file as an artifact
+      # Step 6: Upload the keystore file as an artifact
       - name: Upload Keystore as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}
           path: ./jwt_keystore_${{ inputs.target-env }}_v${{ inputs.version }}.jks
           retention-days: 1
-
-      # Step 6: Configure AWS credentials
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
 
       # Step 7: Run the upload script
       - name: Validate and Upload to S3
