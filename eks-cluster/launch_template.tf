@@ -1,7 +1,7 @@
 # Create a launch template for EKS nodes
 resource "aws_launch_template" "eks_launch_template" {
   name_prefix   = "eks-${var.environment}-${var.project}"
-  image_id      = data.aws_ssm_parameter.eks_ami.value  # Use the SSM parameter value
+  # image_id      = data.aws_ssm_parameter.eks_ami.value  # Use the SSM parameter value
   instance_type = var.instance_type
   key_name = "${var.ec2_key_name}"
 
