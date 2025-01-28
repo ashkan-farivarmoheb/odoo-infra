@@ -68,7 +68,8 @@ resource "aws_eks_node_group" "eks_node_group" {
   node_group_name = "${aws_eks_cluster.eks_cluster.name}-node-group"
   node_role_arn   = aws_iam_role.eks_node_group_role.arn
   subnet_ids      = data.aws_subnets.private-odoo.ids
-
+  ami_type = "AL2023_x86_64_STANDARD"
+  
   scaling_config {
     desired_size = var.desired_size_asg
     max_size     = var.max_size_asg
