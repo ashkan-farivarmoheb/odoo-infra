@@ -28,14 +28,14 @@ resource "aws_launch_template" "eks_launch_template" {
   }
 
   # User data (to bootstrap the node into the EKS cluster)
-  user_data = base64encode(templatefile("${path.module}/templates/userdata.tpl", {
-    cluster_name       = aws_eks_cluster.eks_cluster.name
-    cluster_auth_base64 = aws_eks_cluster.eks_cluster.certificate_authority[0].data
-    endpoint           = aws_eks_cluster.eks_cluster.endpoint
-    dns_cluster_ip     = cidrhost(aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr, 10)
-    ami_id            = data.aws_ssm_parameter.eks_ami.value
-    service_ipv4_cidr = aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr
-  }))
+  # user_data = base64encode(templatefile("${path.module}/templates/userdata.tpl", {
+  #   cluster_name       = aws_eks_cluster.eks_cluster.name
+  #   cluster_auth_base64 = aws_eks_cluster.eks_cluster.certificate_authority[0].data
+  #   endpoint           = aws_eks_cluster.eks_cluster.endpoint
+  #   dns_cluster_ip     = cidrhost(aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr, 10)
+  #   ami_id            = data.aws_ssm_parameter.eks_ami.value
+  #   service_ipv4_cidr = aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr
+  # }))
 
   lifecycle {
     create_before_destroy = true
