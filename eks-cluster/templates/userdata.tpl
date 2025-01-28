@@ -24,10 +24,3 @@ spec:
     - "--node-labels=eks.amazonaws.com/nodegroup-image=${ami_id},eks.amazonaws.com/capacityType=ON_DEMAND,eks.amazonaws.com/nodegroup=${cluster_name}-node-group"
 
 --//--
-
-#!/bin/bash
-set -o xtrace
-/etc/eks/bootstrap.sh ${cluster_name} \
-  --b64-cluster-ca ${cluster_auth_base64} \
-  --apiserver-endpoint https://D1121A1AFB94089B6B7C6013E0E23A6A.gr7.ap-southeast-2.eks.amazonaws.com \
-  --dns-cluster-ip 172.20.0.10
