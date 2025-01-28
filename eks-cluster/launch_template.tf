@@ -33,7 +33,7 @@ resource "aws_launch_template" "eks_launch_template" {
     cluster_auth_base64 = aws_eks_cluster.eks_cluster.certificate_authority[0].data
     endpoint           = aws_eks_cluster.eks_cluster.endpoint
     dns_cluster_ip     = cidrhost(aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr, 10)
-    ami_id            = data.aws_ssm_parameter.eks_ami.value
+    ami_id            = "ami-02ed3377b79b3242b"
     service_ipv4_cidr = aws_eks_cluster.eks_cluster.kubernetes_network_config[0].service_ipv4_cidr
   }))
 
