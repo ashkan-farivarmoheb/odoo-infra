@@ -6,7 +6,6 @@ resource "aws_iam_role" "eks_cluster_role" {
     Statement = [{
       Action = [
           "sts:AssumeRole",
-          "sts:TagSession"
         ]
       Effect = "Allow"
       Principal = {
