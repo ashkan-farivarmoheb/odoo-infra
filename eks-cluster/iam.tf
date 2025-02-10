@@ -32,19 +32,6 @@ resource "aws_iam_role" "eks_node_group_role" {
   assume_role_policy = data.aws_iam_policy_document.eks_node_group_assume_role.json
 }
 
-data "aws_iam_policy_document" "eks_node_group_assume_role" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "sts:AssumeRole"
-    ]
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
 # Attach required IAM policies to the node group role
 resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
   role       = aws_iam_role.eks_node_group_role.name

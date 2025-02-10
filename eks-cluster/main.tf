@@ -2,10 +2,10 @@ resource "aws_eks_cluster" "eks_cluster" {
     name = "${var.environment}-${var.project}"
     version  = "1.31"
     role_arn = aws_iam_role.eks_cluster_role.arn
-
+    
     vpc_config {
         subnet_ids = data.aws_subnets.private-odoo.ids
-        security_group_ids = [aws_security_group.eks_cluster_sg.id]
+        # security_group_ids = [aws_security_group.eks_cluster_sg.id]
         endpoint_private_access = true
         endpoint_public_access  = false
     }
@@ -68,7 +68,7 @@ resource "aws_eks_node_group" "eks_node_group" {
   node_group_name = "${aws_eks_cluster.eks_cluster.name}-node-group"
   node_role_arn   = aws_iam_role.eks_node_group_role.arn
   subnet_ids      = data.aws_subnets.private-odoo.ids
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "CUSTOM"
   
   scaling_config {
     desired_size = var.desired_size_asg
@@ -88,8 +88,7 @@ resource "aws_eks_node_group" "eks_node_group" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_policy,
     aws_iam_role_policy_attachment.eks_CNI_policy,
-    aws_iam_role_policy_attachment.eks_instance_policy,
-    aws_launch_template.eks_launch_template
+    aws_iam_role_policy_attachment.eks_instance_policy
   ]
 
   tags = {
