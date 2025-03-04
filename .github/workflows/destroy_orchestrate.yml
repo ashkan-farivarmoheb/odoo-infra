@@ -58,7 +58,7 @@ jobs:
       - efs
       - rds
     uses: ./.github/workflows/delete_vpc.yml
-    if: ${{ inputs.vpc == true && (inputs.efs || inputs.rds || inputs['ecs-cluster'] || true) }}
+    if: ${{ inputs.vpc == true && (inputs.efs || inputs.rds || inputs.ecs-cluster || true) }}
     with:
       target-env: ${{ inputs.target-env }}
     secrets: inherit
