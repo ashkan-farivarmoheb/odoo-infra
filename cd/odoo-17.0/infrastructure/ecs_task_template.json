@@ -2,8 +2,8 @@
       {
           "name": "odoo",
           "image": "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/${repository_name}:${tag}",
-          "cpu": 1024,
-          "memory": 3584,
+          "cpu": 2048,
+          "memory": 4096,
           "memoryReservation": 3072,
           "portMappings": [],
           "essential": true,
