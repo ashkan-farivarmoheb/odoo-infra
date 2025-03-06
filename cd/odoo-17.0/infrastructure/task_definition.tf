@@ -17,6 +17,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     task_role_arn = "arn:aws:iam::${var.aws_account_id}:role/${var.environment}-${var.project}-task-exec-role"
     execution_role_arn = "arn:aws:iam::${var.aws_account_id}:role/${var.environment}-${var.project}-task-exec-role"
     network_mode = "awsvpc"
-    cpu = "2048"
+    cpu = "3072"
     memory = "4096"
 }
