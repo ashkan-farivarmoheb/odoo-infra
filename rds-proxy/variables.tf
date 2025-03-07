@@ -57,7 +57,7 @@ variable "connection_borrow_timeout" {
 
 variable "init_query" {
   type        = string
-  default = "SET SESSION tcp_keepalives_idle = 60; SET SESSION tcp_keepalives_interval = 30; SET SESSION tcp_keepalives_count = 5;"
+  default     = null
   description = "One or more SQL statements for the proxy to run when opening each new database connection"
 }
 
