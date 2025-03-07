@@ -57,7 +57,7 @@ variable "connection_borrow_timeout" {
 
 variable "init_query" {
   type        = string
-  default     = null
+  default = "SET SESSION tcp_keepalives_idle = 60; SET SESSION tcp_keepalives_interval = 30; SET SESSION tcp_keepalives_count = 5;"
   description = "One or more SQL statements for the proxy to run when opening each new database connection"
 }
 
@@ -69,13 +69,13 @@ variable "max_connections_percent" {
 
 variable "max_idle_connections_percent" {
   type        = number
-  default     = 50
+  default     = 100
   description = "Controls how actively the proxy closes idle database connections in the connection pool. A high value enables the proxy to leave a high percentage of idle connections open. A low value causes the proxy to close idle client connections and return the underlying database connections to the connection pool"
 }
 
 variable "session_pinning_filters" {
   type        = list(string)
-  default     = null
+  default     = ["EXCLUDE_VARIABLE_SETS"]
   description = "Each item in the list represents a class of SQL operations that normally cause all later statements in a session using a proxy to be pinned to the same underlying database connection"
 }
 
