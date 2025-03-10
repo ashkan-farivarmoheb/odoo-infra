@@ -73,7 +73,7 @@
                 "traefik.enable": "true",
                 "traefik.http.routers.odoo-router.tls": "true",
                 "traefik.http.routers.odoo-router.entrypoints": "websecure",
-                "traefik.http.routers.odoo-router.rule": "Host(`${edge_url}`) && PathPrefix(`/web`)",
+                "traefik.http.routers.odoo-router.rule": "Host(`${edge_url}`)",
                 "traefik.http.services.${environment}-${project}-service.loadbalancer.server.port": "443",
                 "traefik.http.services.${environment}-${project}-service.loadbalancer.server.scheme": "https",
                 "traefik.http.services.${environment}-${project}-service.loadbalancer.server.url": "https://${environment}.${project}.${base_url}",
